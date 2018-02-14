@@ -1,0 +1,51 @@
+---
+####Installing Kong  
+- name: Installing Dependency Packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - openssl
+    - libpcre3
+    - procps
+    - python
+    - perl
+    - python3-psycopg2
+
+- name: Installing kong .deb package for ubuntu 14.04
+  apt:
+    deb: https://bintray.com/kong/kong-community-edition-deb/download_file?file_path=dists/kong-community-edition-0.11.1.trusty.all.deb
+  when: ansible_distribution_version == "14.04"
+
+- name: Installing a kong .deb package for ubuntu 16.04
+  apt:
+    deb: https://bintray.com/kong/kong-community-edition-deb/download_file?file_path=dists/kong-community-edition-0.11.1.xenial.all.deb
+  when: ansible_distribution_version == "16.04"
+
+- name: Adding Postgresql repo for ubuntu 14.04
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main
+    state: present
+    filename: 'postgresql.list'
+  when: ansible_distribution_version == "14.04"
+
+- name: Adding Postgresql repo for ubuntu 16.04
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
+    state: present
+    filename: 'postgresql.list'
+  when: ansible_distribution_version == "16.04"
+
+- name: Adding Apt signing key for Postgresql latest versions
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Installing Postgresql Version 9.6
+  apt: 
+    name: postgresql-9.6
+    state: latest
+    update_cache: yes
+  notify: restart postgresql
+

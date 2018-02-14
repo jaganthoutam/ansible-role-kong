@@ -1,0 +1,39 @@
+---
+- name: Adding Node repo for ubuntu 14.04
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_7.x trusty main
+    state: present
+    filename: 'node.list'
+  when: ansible_distribution_version == "14.04"
+
+- name: Adding Node repo for ubuntu 16.04
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_7.x xenial main
+    state: present
+    filename: 'node.list'
+  when: ansible_distribution_version == "16.04"
+
+- name: Installing NodeJs
+  apt: 
+    name: nodejs
+    state: latest
+    force: yes
+    update_cache: yes
+
+- name: Installing Kong DashBoard
+  npm:
+    name: kong-dashboard
+    global: yes
+
+- name: Copying Startup Script for Kong DashBoard 
+  template:
+    src: start-kong.sh.j2
+    dest: "/home/ubuntu/start-kong.sh"
+
+- name: Starting Kong DashBoard 
+  shell: bash -x /home/ubuntu/start-kong.sh 
+  user: ubuntu
+  group: ubuntu
+  async: 2592000
+  poll: 0
+

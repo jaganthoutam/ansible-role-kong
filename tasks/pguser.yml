@@ -1,0 +1,41 @@
+---
+- name: Modifying the Postgresql configuration file
+  replace:
+    dest: /etc/postgresql/9.6/main/pg_hba.conf
+    regexp: 'peer'
+    replace: 'md5'
+    backup: yes
+  notify: restart postgresql
+
+- name: creating Database for kong in Postgresql
+  postgresql_db: 
+    name: kong
+  become: true
+  become_user: postgres
+
+- name: creating postgresql user for kong
+  become: true
+  become_user: postgres
+  postgresql_user:
+    db: kong
+    name: kong
+    password: kong
+    encrypted: no
+    state: present
+    priv: ALL
+
+
+- name:  Reconfiguring Kong file and linking with Postgresql
+  template:
+    src: kong.conf.j2
+    dest: "/etc/kong.conf"
+  notify: restart postgresql
+
+- name: Kong Migration Process
+  command: kong migrations up [-c /etc/kong/kong.conf]
+
+- name: Starting Kong Service
+  command: sudo kong start [-c /etc/kong/kong.conf]
+
+
+

@@ -1,0 +1,31 @@
+---
+- name: Install Pip and pip3
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - python-pip
+    - python3-pip
+
+- name: Upgrade Pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+
+- name: Install Jupyter
+  pip:
+    name: jupyter
+    executable: pip3.5
+
+- name: Jupyter Notebook Generation
+  shell: jupyter notebook --generate-config -y
+  become: true
+  become_user: ubuntu
+
+- name: Copy the Notebook Configuration
+  template:
+    src: jupyter_notebook_config.py.j2
+    dest: /home/ubuntu/.jupyter/jupyter_notebook_config.py 
+    owner: ubuntu
+    group: ubuntu

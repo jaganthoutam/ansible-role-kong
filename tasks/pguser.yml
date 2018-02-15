@@ -35,7 +35,9 @@
   command: kong migrations up [-c /etc/kong/kong.conf]
 
 - name: Starting Kong Service
-  command: sudo kong start [-c /etc/kong/kong.conf]
+  command: kong start [-c /etc/kong/kong.conf]
+  become: true
+  become_method: sudo
 
 
 

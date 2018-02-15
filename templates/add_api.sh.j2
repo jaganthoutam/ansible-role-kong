@@ -1,0 +1,11 @@
+#!/bin/bash
+	curl -i -X POST \
+	--url http://localhost:8001/apis/ \
+	--data 'name=Base-Route' \
+	--data 'hosts=localhost' \
+	--data 'uris=/' \
+	--data 'methods=GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD' \
+	--data 'upstream_url=http://localhost:9999' \
+ --data 'upstream_connect_timeout=6000000' \
+ --data 'upstream_send_timeout=6000000' \
+ --data 'upstream_read_timeout=6000000'
